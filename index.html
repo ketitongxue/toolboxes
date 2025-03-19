@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ToolBoxes - 进制转换与字节换算工具 | ketitx.cn</title>
+        <meta name="description" content="ToolBoxes提供专业的在线进制转换和字节单位换算服务，支持二进制/十进制/十六进制转换和B/KB/MB/GB/TB换算，全设备适配。">
+        <meta name="keywords" content="进制转换,字节换算,单位转换,在线工具,二进制转换">
+        <link rel="canonical" href="https://ketitx.cn">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            .input-transition { transition: all 0.3s ease-in-out; }
+            .input-highlight:focus { box-shadow: 0 0 0 3px rgba(0, 125, 250, 0.3); }
+            .result-card { background: linear-gradient(145deg, #f8f9fa, #ffffff); }
+            .unit-select { min-width: 90px; }
+            .tab-content { display: none; }
+            .tab-active { display: block; }
+            .nav-link { 
+                transition: all 0.2s ease;
+                padding: 0.75rem 1.5rem;
+                border-radius: 9999px;
+            }
+            .nav-link.active {
+                background-color: #007AFF;
+                color: white;
+            }
+        </style>
+    </head>
+    <body class="bg-gray-50 min-h-screen">
+        <main class="container mx-auto px-4 py-8 max-w-4xl">
+            <!-- 标题部分 -->
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 text-center">
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-500">
+                    ToolBoxes
+                </span>
+            </h1>
+            <p class="text-gray-600 text-center mb-8 text-lg">🔧 您的全能在线计算工具集</p>
+    
+            <!-- 导航选项卡 -->
+            <div class="flex justify-center mb-8 space-x-4">
+                <button class="nav-link active" onclick="switchTab('base')">进制转换</button>
+                <button class="nav-link" onclick="switchTab('byte')">字节换算</button>
+            </div>
+    
+            <!-- 进制转换模块 -->
+            <div id="base-tab" class="tab-content bg-white rounded-2xl shadow-lg p-6 md:p-8 tab-active">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">进制转换器</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 mb-2">二进制 (2)</label>
+                        <input type="text" id="binary" 
+                               class="w-full p-3 border rounded-lg input-transition input-highlight"
+                               placeholder="输入二进制数字" 
+                               pattern="[01]+"
+                               oninput="convert(2, this.value)">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">十进制 (10)</label>
+                        <input type="number" id="decimal" 
+                               class="w-full p-3 border rounded-lg input-transition input-highlight"
+                               placeholder="输入十进制数字"
+                               oninput="convert(10, this.value)">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">十六进制 (16)</label>
+                        <input type="text" id="hex" 
+                               class="w-full p-3 border rounded-lg input-transition input-highlight"
+                               placeholder="输入十六进制数字"
+                               pattern="[0-9A-Fa-f]+"
+                               oninput="convert(16, this.value)">
+                    </div>
+                </div>
+                <div class="mt-8 result-card p-6 rounded-xl border">
+                    <h3 class="text-lg font-medium text-gray-700 mb-4">转换结果</h3>
+                    <div class="space-y-3">
+                        <p class="text-gray-600">二进制: <span id="result-binary" class="text-blue-600 font-mono">-</span></p>
+                        <p class="text-gray-600">十进制: <span id="result-decimal" class="text-blue-600 font-mono">-</span></p>
+                        <p class="text-gray-600">十六进制: <span id="result-hex" class="text-blue-600 font-mono">-</span></p>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- 字节转换模块 -->
+            <div id="byte-tab" class="tab-content bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">字节单位换算</h2>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex gap-2">
+                            <input type="number" id="bytesInput" 
+                                   class="flex-1 p-3 border rounded-lg input-transition input-highlight"
+                                   placeholder="输入数值"
+                                   step="any"
+                                   oninput="convertBytes('custom', this.value)">
+                            <select id="bytesUnit" 
+                                    class="unit-select p-3 border rounded-lg bg-white input-transition"
+                                    onchange="convertBytes('custom', document.getElementById('bytesInput').value)">
+                                <option value="B">字节 (B)</option>
+                                <option value="KB">千字节 (KB)</option>
+                                <option value="MB">兆字节 (MB)</option>
+                                <option value="GB">吉字节 (GB)</option>
+                                <option value="TB">太字节 (TB)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 result-card p-6 rounded-xl border">
+                    <h3 class="text-lg font-medium text-gray-700 mb-4">换算结果</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">字节 (B)</p>
+                            <p class="text-blue-600 font-mono" id="result-B">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">千字节 (KB)</p>
+                            <p class="text-blue-600 font-mono" id="result-KB">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">兆字节 (MB)</p>
+                            <p class="text-blue-600 font-mono" id="result-MB">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">吉字节 (GB)</p>
+                            <p class="text-blue-600 font-mono" id="result-GB">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">太字节 (TB)</p>
+                            <p class="text-blue-600 font-mono" id="result-TB">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+<script>
+// 进制转换
+function convert(fromBase, value) {
+    try {
+        let decimal = fromBase === 10 ? parseInt(value, 10) : 
+                     fromBase === 2 ? parseInt(value, 2) : 
+                     parseInt(value, 16);
+
+        if (isNaN(decimal)) {
+            clearResults();
+            return;
+        }
+
+        document.getElementById('result-binary').textContent = decimal.toString(2);
+        document.getElementById('result-decimal').textContent = decimal;
+        document.getElementById('result-hex').textContent = decimal.toString(16).toUpperCase();
+
+        // 更新其他输入框
+        if(fromBase !== 2) document.getElementById('binary').value = decimal.toString(2);
+        if(fromBase !== 10) document.getElementById('decimal').value = decimal;
+        if(fromBase !== 16) document.getElementById('hex').value = decimal.toString(16).toUpperCase();
+    } catch(e) {
+        clearResults();
+    }
+}
+
+// 新增字节转换函数
+function convertBytes(fromType, value) {
+    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const inputUnit = document.getElementById('bytesUnit').value;
+    const inputValue = parseFloat(value);
+    
+    if (isNaN(inputValue)) {
+        clearByteResults();
+        return;
+    }
+
+    try {
+        // 计算基准字节数
+        let bytes = inputValue;
+        switch(inputUnit) {
+            case 'KB': bytes *= 1024; break;
+            case 'MB': bytes *= 1024 ** 2; break;
+            case 'GB': bytes *= 1024 ** 3; break;
+            case 'TB': bytes *= 1024 ** 4; break;
+        }
+
+        // 更新所有单位显示
+        document.getElementById('result-B').textContent = formatNumber(bytes);
+        document.getElementById('result-KB').textContent = formatNumber(bytes / 1024);
+        document.getElementById('result-MB').textContent = formatNumber(bytes / (1024 ** 2));
+        document.getElementById('result-GB').textContent = formatNumber(bytes / (1024 ** 3));
+        document.getElementById('result-TB').textContent = formatNumber(bytes / (1024 ** 4));
+    } catch(e) {
+        clearByteResults();
+    }
+}
+
+function formatNumber(num) {
+    if (num === 0) return '0';
+    if (num >= 1e18) return num.toExponential(2);
+    return num.toLocaleString('zh-CN', {
+        maximumFractionDigits: 2,
+        useGrouping: false
+    });
+}
+
+// 选项卡切换功能
+function switchTab(tabName) {
+    // 切换导航样式
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    event.target.classList.add('active');
+
+    // 切换内容显示
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('tab-active');
+    });
+    document.getElementById(`${tabName}-tab`).classList.add('tab-active');
+}
+
+// 初始化默认显示进制转换模块
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('base-tab').classList.add('tab-active');
+});
+
+function clearByteResults() {
+    document.querySelectorAll('[id^="result-"]').forEach(el => el.textContent = '-');
+}
+</script>
+</body>
+</html>
