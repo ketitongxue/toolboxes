@@ -3,8 +3,8 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ToolBoxes - 多功能在线工具集 | ketitx.cn</title>
-        <meta name="description" content="ToolBoxes专业提供进制转换、字节换算和JSON格式化工具，支持实时预览和跨设备使用，满足开发者日常需求。">
+        <title>CraftToolLab - 多功能在线工具集 | crafttoollab.com</title>
+        <meta name="description" content="CraftToolLab专业提供进制转换、字节换算和JSON格式化工具，支持实时预览和跨设备使用，满足开发者日常需求。">
         <meta name="keywords" content="JSON格式化,在线工具,进制转换,字节换算,代码美化">
         <link rel="canonical" href="https://crafttoollab.com/">
         <script src="https://cdn.tailwindcss.com"></script>
@@ -42,7 +42,7 @@
             <!-- 标题部分 -->
             <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 text-center">
                 <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-500">
-                    ToolBoxes
+                    CraftToolLab
                 </span>
             </h1>
             <p class="text-gray-600 text-center mb-8 text-lg">🔧 您的全能在线计算工具集</p>
@@ -59,7 +59,7 @@
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6">进制转换器</h2>
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-gray-700 mb-2">二进制 (2)</label>
+                        <label class="block text-gray-700 mb-2">二进制 (请输入0-1内的数字)</label>
                         <input type="text" id="binary" 
                                class="w-full p-3 border rounded-lg input-transition input-highlight"
                                placeholder="输入二进制数字" 
@@ -67,14 +67,14 @@
                                oninput="convert(2, this.value)">
                     </div>
                     <div>
-                        <label class="block text-gray-700 mb-2">十进制 (10)</label>
+                        <label class="block text-gray-700 mb-2">十进制 (请输入0-9内的数字)</label>
                         <input type="number" id="decimal" 
                                class="w-full p-3 border rounded-lg input-transition input-highlight"
                                placeholder="输入十进制数字"
                                oninput="convert(10, this.value)">
                     </div>
                     <div>
-                        <label class="block text-gray-700 mb-2">十六进制 (16)</label>
+                        <label class="block text-gray-700 mb-2">十六进制 (请输入0-9内的数字或A-F以内的字母)</label>
                         <input type="text" id="hex" 
                                class="w-full p-3 border rounded-lg input-transition input-highlight"
                                placeholder="输入十六进制数字"
@@ -146,23 +146,31 @@
             <div id="json-tab" class="tab-content bg-white rounded-2xl shadow-lg p-6 md:p-8">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6">JSON格式化工具</h2>
                 <div class="space-y-4">
-                    <div>
-                        <label class="block text-gray-700 mb-2">原始JSON</label>
+                    <div class="relative">
                         <textarea id="json-input" 
                             class="w-full p-3 border rounded-lg input-transition input-highlight json-editor"
                             placeholder="输入或粘贴JSON数据"
                             spellcheck="false"
                             oninput="formatJSON(this.value)"></textarea>
+                        <!-- 新增清除按钮 -->
+                        <button onclick="clearJSONInput()" 
+                                class="absolute right-3 top-3 p-2 text-gray-500 hover:text-red-500 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
                 <div class="mt-8 result-card p-6 rounded-xl border">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium text-gray-700">格式化结果</h3>
-                        <button onclick="copyJSON()" 
-                                class="px-3 py-1 text-sm bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors">
-                            复制结果
-                        </button>
+                        <div class="flex gap-2">
+                            <button onclick="copyJSON()" 
+                                    class="px-3 py-1 text-sm bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors">
+                                复制结果
+                            </button>
+                        </div>
                     </div>
                     <pre id="json-output" class="overflow-x-auto p-4 bg-gray-50 rounded-lg"></pre>
                     <p id="json-error" class="text-red-500 mt-2 hidden">❌ 无效的JSON格式，请检查输入</p>
@@ -171,7 +179,7 @@
         </main>
 
 <script>
-// 进制转换
+// 进制转换函数
 function convert(fromBase, value) {
     try {
         let decimal = fromBase === 10 ? parseInt(value, 10) : 
@@ -179,7 +187,7 @@ function convert(fromBase, value) {
                      parseInt(value, 16);
 
         if (isNaN(decimal)) {
-            clearResults();
+            clearByteResults();
             return;
         }
 
@@ -192,11 +200,11 @@ function convert(fromBase, value) {
         if(fromBase !== 10) document.getElementById('decimal').value = decimal;
         if(fromBase !== 16) document.getElementById('hex').value = decimal.toString(16).toUpperCase();
     } catch(e) {
-        clearResults();
+        clearByteResults();
     }
 }
 
-// 新增字节转换函数
+// 字节转换函数
 function convertBytes(fromType, value) {
     const units = ['B', 'KB', 'MB', 'GB', 'TB'];
     const inputUnit = document.getElementById('bytesUnit').value;
@@ -253,6 +261,14 @@ function formatJSON(input) {
     }
 }
 
+// 新增清除函数
+function clearJSONInput() {
+    document.getElementById('json-input').value = '';
+    document.getElementById('json-output').innerHTML = '';
+    document.getElementById('json-error').classList.add('hidden');
+}
+
+// 语法高亮规则函数
 function syntaxHighlight(json) {
     if (typeof json != 'string') json = JSON.stringify(json, null, 2);
     
